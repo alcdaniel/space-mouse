@@ -18,8 +18,7 @@ const int calSamples = 300;
 const int panMaxSpeed = 28;
 const int orbitMaxSpeed = 48;
 const float movementScale = 0.10f;
-const unsigned long idleReleaseMs = 250;
-const unsigned long centerReleaseMs = 180;
+const unsigned long centerReleaseMs = 500;
 const float minAxisMotion = 0.18f;
 
 // center_free shows about +/-0.26 of noise around the mean on X/Y.
@@ -258,9 +257,13 @@ void loop()
     float panY = normalizeAxis(panInputY, panDownRange, panUpRange, xyDeadband);
     panX = gateAxisMotion(panX);
     panY = gateAxisMotion(panY);
+    if (panX > 0.0f)
+    {
+      panX = clampUnit(panX * 1.25f);
+    }
     if (panY > 0.0f)
     {
-      panY = clampUnit(panY * 4.0f);
+      panY = clampUnit(panY * 2.0f);
     }
     panY *= 0.5f;
     bool panNearCenter = isNearCenter(panInputX, panInputY, xyReleaseBand);
@@ -292,11 +295,6 @@ void loop()
     else
     {
       nearCenterSinceMs = 0;
-      if (lastMotionAtMs != 0 && now - lastMotionAtMs >= idleReleaseMs)
-      {
-        releaseNavigationState();
-        lastMotionAtMs = 0;
-      }
     }
 
   }
@@ -346,11 +344,6 @@ void loop()
     else
     {
       nearCenterSinceMs = 0;
-      if (lastMotionAtMs != 0 && now - lastMotionAtMs >= idleReleaseMs)
-      {
-        releaseNavigationState();
-        lastMotionAtMs = 0;
-      }
     }
 
   }
