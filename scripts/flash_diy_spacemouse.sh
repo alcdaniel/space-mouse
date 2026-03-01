@@ -4,18 +4,95 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-SKETCH_DIR="${REPO_ROOT}/Code/diy-spacemouse"
-BUILD_DIR="/tmp/diy-spacemouse-build"
+DEFAULT_SKETCH_SUBDIR="diy-spacemouse"
+SKETCH_SUBDIR="$DEFAULT_SKETCH_SUBDIR"
 FQBN="rp2040:rp2040:adafruit_qtpy:usbstack=tinyusb"
 CORE_ID="rp2040:rp2040"
 BOOT_VOLUME="/Volumes/RPI-RP2"
+REQUIRED_LIBS=()
+EXPECT_CORE_TINYUSB=0
+USER_TINYUSB_DIR="$HOME/Documents/Arduino/libraries/Adafruit_TinyUSB_Library"
 
-REQUIRED_LIBS=(
-  "Adafruit TinyUSB Library"
-  "OneButton"
-  "SimpleKalmanFilter"
-  "XENSIV 3D Magnetic Sensor TLx493D"
-)
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--sketch <folder-inside-Code>]
+
+Default sketch:
+  Code/${DEFAULT_SKETCH_SUBDIR}
+
+Examples:
+  $(basename "$0")
+  $(basename "$0") --sketch diy-spacemouse
+  $(basename "$0") --sketch diy-spacemouse-calibration
+  $(basename "$0") --sketch diy-spacemouse-like-diagnostic
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --sketch)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for --sketch" >&2
+        usage
+        exit 1
+      fi
+      SKETCH_SUBDIR="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ "$SKETCH_SUBDIR" = /* || "$SKETCH_SUBDIR" == *".."* ]]; then
+  echo "Sketch path must be a folder inside Code/." >&2
+  exit 1
+fi
+
+SKETCH_DIR="${REPO_ROOT}/Code/${SKETCH_SUBDIR}"
+BUILD_TAG="${SKETCH_SUBDIR//\//-}"
+BUILD_TAG="${BUILD_TAG// /-}"
+BUILD_DIR="/tmp/${BUILD_TAG}-build"
+
+case "$SKETCH_SUBDIR" in
+  diy-spacemouse)
+    REQUIRED_LIBS=(
+      "Adafruit TinyUSB Library"
+      "OneButton"
+      "SimpleKalmanFilter"
+      "XENSIV 3D Magnetic Sensor TLx493D"
+    )
+    ;;
+  diy-spacemouse-like)
+    EXPECT_CORE_TINYUSB=1
+    REQUIRED_LIBS=(
+      "SimpleKalmanFilter"
+      "XENSIV 3D Magnetic Sensor TLx493D"
+    )
+    ;;
+  diy-spacemouse-calibration)
+    REQUIRED_LIBS=(
+      "XENSIV 3D Magnetic Sensor TLx493D"
+    )
+    ;;
+  diy-spacemouse-like-diagnostic)
+    EXPECT_CORE_TINYUSB=1
+    REQUIRED_LIBS=()
+    ;;
+  *)
+    REQUIRED_LIBS=(
+      "SimpleKalmanFilter"
+      "XENSIV 3D Magnetic Sensor TLx493D"
+    )
+    ;;
+esac
 
 need_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -76,6 +153,13 @@ if [[ ! -d "$SKETCH_DIR" ]]; then
   exit 1
 fi
 
+echo "Using sketch: $SKETCH_DIR"
+if (( EXPECT_CORE_TINYUSB )) && [[ -d "$USER_TINYUSB_DIR" ]]; then
+  echo "Note: this sketch is intended to use the RP2040 core's bundled TinyUSB stack."
+  echo "If HID enumerates but no reports arrive, temporarily rename:"
+  echo "  $USER_TINYUSB_DIR"
+fi
+echo
 echo "Checking Arduino core..."
 if has_core; then
   echo "Core already installed: $CORE_ID"

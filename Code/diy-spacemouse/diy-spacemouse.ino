@@ -259,13 +259,12 @@ void loop()
     panY = gateAxisMotion(panY);
     if (panX > 0.0f)
     {
-      panX = clampUnit(panX * 1.25f);
+      panX = clampUnit(panX * 1.5f);
     }
     if (panY > 0.0f)
     {
       panY = clampUnit(panY * 2.0f);
     }
-    panY *= 0.5f;
     bool panNearCenter = isNearCenter(panInputX, panInputY, xyReleaseBand);
 
     if (panNearCenter)

@@ -98,6 +98,39 @@ If the board is not already in BOOTSEL mode, the script will prompt you to do th
 
 After the copy finishes, the board should reboot automatically.
 
+## Fusion Bridge For `diy-spacemouse-like`
+
+If you flash `Code/diy-spacemouse-like`, the board exposes a generic HID multi-axis device. Fusion on macOS may not react to that device directly, so this repository includes a local bridge that translates its HID reports into mouse and keyboard events that Fusion already understands.
+
+The bridge script is:
+
+```text
+scripts/fusion_hid_bridge.py
+```
+
+Typical workflow:
+
+1. Keep `~/Documents/Arduino/libraries/Adafruit_TinyUSB_Library` renamed or disabled so `diy-spacemouse-like` uses the RP2040 core's bundled TinyUSB stack.
+2. Flash the HID firmware:
+
+```bash
+bash scripts/flash_diy_spacemouse.sh --sketch diy-spacemouse-like
+```
+
+3. Run the bridge in the same Python environment where `import hid` works:
+
+```bash
+python3 scripts/fusion_hid_bridge.py
+```
+
+Notes:
+
+- On macOS, Terminal (or the Python app you use) must have Accessibility permission, otherwise Fusion will not react to the synthetic input events.
+- `RID 1` is mapped to pan (`Shift` + middle-mouse drag).
+- `RID 2` is mapped to orbit (middle-mouse drag).
+- `RID 3` button bit 1 triggers `Cmd` + `Shift` + `H` and button bit 2 triggers a double middle click.
+- If the direction feels wrong, rerun the bridge with `--invert-x` and/or `--invert-y`.
+
 ## Flash The Calibration Firmware
 
 The calibration sketch is:
