@@ -251,7 +251,7 @@ def main() -> int:
                 f"baud={args.baud}",
                 f"duration_s={args.duration}",
                 "",
-                "Paste these blocks back to me after recording each movement",
+                "Recorded movement blocks",
                 "",
             ]
 

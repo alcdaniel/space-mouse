@@ -280,7 +280,7 @@ class App:
 
         right_frame = ttk.Frame(panes)
         right_frame.grid(row=0, column=1, sticky="nsew", padx=(6, 0))
-        ttk.Label(right_frame, text="Label Report (copy/paste this)").pack(anchor="w")
+        ttk.Label(right_frame, text="Label Report").pack(anchor="w")
         self.report_text = tk.Text(
             right_frame,
             height=14,
@@ -293,7 +293,7 @@ class App:
         self.report_text.pack(fill="both", expand=True)
         self.report_text.insert(
             "end",
-            "Paste these blocks back to me after recording each movement.\n\n",
+            "Recorded movement blocks.\n\n",
         )
 
     def connect_if_possible(self) -> None:
@@ -426,7 +426,7 @@ class App:
         self.report_text.delete("1.0", "end")
         self.report_text.insert(
             "end",
-            "Paste these blocks back to me after recording each movement.\n\n",
+            "Recorded movement blocks.\n\n",
         )
         self.status_var.set("Report cleared")
 

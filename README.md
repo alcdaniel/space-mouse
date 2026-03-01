@@ -1,4 +1,8 @@
-# DIY Spacemouse for Fusion 360
+# My DIY Spacemouse for Fusion 360
+
+This is my personal repository for building, calibrating, and maintaining my own version of the DIY SpaceMouse for Fusion 360.
+
+It is based on the original DIY SpaceMouse project shared by the creator of the linked build video and Instructables guide. This repository keeps that attribution visible and preserves the original `CC BY-NC-SA 4.0` licensing terms for the upstream work and for my changes to it.
 
 Watch the build video ↓
 
@@ -7,6 +11,12 @@ Watch the build video ↓
 This device is made for Fusion360 but can be adapted to other CAD applications. Current features: Orbit, Pan, Home view and Fit to view.
 
 Build instructions → [Instructables](https://www.instructables.com/DIY-Space-Mouse-for-Fusion-360-Using-Magnets)
+
+## Attribution
+
+- Original project concept, build guide, and media: the creator of the linked YouTube video and Instructables tutorial above
+- This repository: my personal adaptation, firmware workflow, calibration tooling, and project maintenance
+- When reusing or remixing this repository, keep attribution to the original creator and this repository
 
 ## Current Firmware Workflow
 
@@ -237,6 +247,17 @@ If the main firmware moves by itself at center:
 - capture a fresh `center_free`
 - increase the deadband in `Code/diy-spacemouse/diy-spacemouse.ino`
 - then reflash the main firmware
+
+## License
+
+This repository is a personal adaptation of an existing project, so the correct license remains `Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)`.
+
+That means:
+
+- you must give appropriate credit to the original creator
+- you must keep attribution to this adaptation when sharing modified versions
+- you may not use the work commercially
+- shared adaptations must stay under the same license
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
